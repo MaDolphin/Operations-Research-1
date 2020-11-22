@@ -9,13 +9,13 @@ def solve(items, bins, conflicts, capacity, weight):
   for i in items:
     for j in bins:
       # TODO: Adjust additional attributes (lb, ub, vtype, obj). Do NOT change the name!
-      x[i,j] = model.addVar(name="x_%s_%s" % (i,j))
+      x[i,j] = model.addVar(name="x_%s_%s" % (i,j), vtype=GRB.BINARY)
 
   # Decision variable y_j indicates whether Bin j is used (value = 1) or not (value = 0).
   y = {}
   for j in bins:
     # TODO: Adjust additional attributes (lb, ub, vtype, obj). Do NOT change the name!
-    y[j] = model.addVar(name="y_%s" % (j))
+    y[j] = model.addVar(name="y_%s" % (j), vtype=GRB.BINARY, obj=1)
 
   # TODO: Add potential additional variables.
 
@@ -28,9 +28,15 @@ def solve(items, bins, conflicts, capacity, weight):
   # TODO: Add the linear constraints of the model. Nonlinearities in the model, e.g.,
   # multiplication of two decision variables, results in a score of 0!
 
+  for j in bins:
+    model.addConstr(quicksum(x[i, j] * weight[i] for i in items) <= capacity * y[j])
 
+  for i in items:
+    model.addConstr(quicksum(x[i, j] for j in bins) == 1)
 
-
+  for j in bins:
+    for conflict in conflicts:
+      model.addConstr(x[conflict[0], j] + x[conflict[1], j] <= 1)
 
 
   # Solve
