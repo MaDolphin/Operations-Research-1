@@ -34,7 +34,7 @@ def solve(lengths, demands, types, m, roll_lengths):
     # other
     # for j in range(0,m):
     #     for k in range(0,t):
-    #         model.addConstrs(quicksum(lengths[i] * x[i, j, k] for i in range(0, n)) <= roll_lengths[k] * y[j, k])
+    #         model.addConstr(quicksum(lengths[i] * x[i, j, k] for i in range(0, n)) <= roll_lengths[k] * y[j, k])
 
     model.update()
     model.optimize()
