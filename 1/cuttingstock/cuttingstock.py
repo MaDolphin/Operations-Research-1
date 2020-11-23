@@ -22,12 +22,19 @@ def solve(lengths, demands, types, m, roll_lengths):
     # If necessary, define the objective function below
 
     # If necessary, add constraints to the model below
-    for i in range(0,n):
-        model.addConstr(quicksum(x[i,j,types[i]] for j in range(0,m)) >= demands[i])
 
-    for j in range(0,m):
-        for k in range(0,t):
-            model.addConstr(quicksum(lengths[i] * x[i,j,k] for i in range(0,n)) <= roll_lengths[k] * y[j,k])
+    model.addConstrs(quicksum(x[i,j,types[i]] for j in range(0,m)) >= demands[i] for i in range(0,n))
+
+    # other
+    # for i in range(0, n):
+    #     model.addConstr(quicksum(x[i, j, types[i]] for j in range(0, m)) >= demands[i])
+
+    model.addConstrs(quicksum(lengths[i] * x[i,j,k] for i in range(0,n)) <= roll_lengths[k] * y[j,k] for j in range(0,m) for k in range(0,t))
+
+    # other
+    # for j in range(0,m):
+    #     for k in range(0,t):
+    #         model.addConstrs(quicksum(lengths[i] * x[i, j, k] for i in range(0, n)) <= roll_lengths[k] * y[j, k])
 
     model.update()
     model.optimize()
