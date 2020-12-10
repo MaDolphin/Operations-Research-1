@@ -23,13 +23,36 @@ def solve(V, A, a, b, c, d, m):
 
     # If necessary, add further variables below
 
+    Max_value = 99999
 
     # If necessary, define the objective function below
-
+    model.setObjective(
+        quicksum(c[i, j] * x[i, j, k] for k in range(m) for i, j in A)
+    )
 
     # If necessary, add constraints to the model below
 
-    
+    for k in range(m):
+        for v in V[1:]:
+            model.addConstr(quicksum(x[i,j,k] for i,j in A if i == v) == z[i,k])
+
+    for k in range(m):
+        for v in V[1:]:
+            model.addConstr(quicksum(x[i,j,k] for i,j in A if j == v) == z[j,k])
+
+    for i in range(1,n):
+        model.addConstr(quicksum(z[i,k] for k in range(m)) == 1)
+
+    for i in range(1,n):
+        for k in range(m):
+            model.addConstr(a[i] <= t[i,k])
+            model.addConstr(t[i,k] <= b[i])
+
+    for i,j in A:
+        for k in range(m):
+            if (j != 0 ):
+                model.addConstr((t[i, k] + d[i,j]) <= (t[j, k] + Max_value * (1 - x[i,j,k])))
+
     model.update()
     model.optimize()
 
